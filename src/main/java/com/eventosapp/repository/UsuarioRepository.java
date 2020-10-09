@@ -1,10 +1,9 @@
 package com.eventosapp.repository;
 
+import com.eventosapp.models.Usuario;
 import org.springframework.data.repository.CrudRepository;
 
-import com.eventosapp.models.Usuario;
+public interface UsuarioRepository extends CrudRepository<Usuario, String> {
 
-public interface UsuarioRepository extends CrudRepository<Usuario, String>{
-
-	Usuario findByLogin(String login);
+    Usuario findByLogin(String login);
 }
