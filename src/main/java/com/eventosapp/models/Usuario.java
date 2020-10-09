@@ -4,13 +4,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -24,7 +19,7 @@ private static final long serialVersionUID = 1L;
 	
 	private String nomeCompleto;
 	
-	@NotEmpty
+	@Column(nullable = false)
 	private String senha;
 	
 	@ManyToMany
