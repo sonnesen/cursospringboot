@@ -7,27 +7,26 @@ import com.eventosapp.repository.EventoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
 @Controller
+@RequestMapping("/eventos")
 @RequiredArgsConstructor
 public class EventoController {
 
     private final EventoRepository er;
     private final ConvidadoRepository cr;
 
-    @RequestMapping(value = "/cadastrarEvento", method = RequestMethod.GET)
+    @GetMapping("/novo")
     public String form() {
         return "evento/formEvento";
     }
 
-    @RequestMapping(value = "/cadastrarEvento", method = RequestMethod.POST)
+    @PostMapping
     public String form(@Valid Evento evento, BindingResult result, RedirectAttributes attributes) {
         if (result.hasErrors()) {
             attributes.addFlashAttribute("mensagem", "Verifique os campos!");
@@ -39,7 +38,7 @@ public class EventoController {
         return "redirect:/cadastrarEvento";
     }
 
-    @RequestMapping("/eventos")
+    @GetMapping
     public ModelAndView listaEventos() {
         ModelAndView mv = new ModelAndView("listaEventos");
         Iterable<Evento> eventos = er.findAll();
@@ -47,8 +46,8 @@ public class EventoController {
         return mv;
     }
 
-    @RequestMapping(value = "/{codigo}", method = RequestMethod.GET)
-    public ModelAndView detalhesEvento(@PathVariable("codigo") long codigo) {
+    @GetMapping("/{codigo}")
+    public ModelAndView detalhesEvento(@PathVariable("codigo") Long codigo) {
         Evento evento = er.findByCodigo(codigo);
         ModelAndView mv = new ModelAndView("evento/detalhesEvento");
         mv.addObject("evento", evento);
@@ -59,16 +58,18 @@ public class EventoController {
         return mv;
     }
 
-    @RequestMapping("/deletarEvento")
-    public String deletarEvento(long codigo) {
+    @DeleteMapping("/{codigo}")
+    public String deletarEvento(@PathVariable Long codigo) {
         Evento evento = er.findByCodigo(codigo);
         er.delete(evento);
         return "redirect:/eventos";
     }
 
-
-    @RequestMapping(value = "/{codigo}", method = RequestMethod.POST)
-    public String detalhesEventoPost(@PathVariable("codigo") long codigo, @Valid Convidado convidado, BindingResult result, RedirectAttributes attributes) {
+    @PostMapping(value = "/{codigo}")
+    public String adicionarConvidadosAoEvento(@PathVariable("codigo") Long codigo,
+                                              @Valid Convidado convidado,
+                                              BindingResult result,
+                                              RedirectAttributes attributes) {
         if (result.hasErrors()) {
             attributes.addFlashAttribute("mensagem", "Verifique os campos!");
             return "redirect:/{codigo}";
@@ -80,14 +81,4 @@ public class EventoController {
         return "redirect:/{codigo}";
     }
 
-    @RequestMapping("/deletarConvidado")
-    public String deletarConvidado(String rg) {
-        Convidado convidado = cr.findByRg(rg);
-        cr.delete(convidado);
-
-        Evento evento = convidado.getEvento();
-        long codigoLong = evento.getCodigo();
-        String codigo = "" + codigoLong;
-        return "redirect:/" + codigo;
-    }
 }	
